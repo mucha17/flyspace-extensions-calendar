@@ -1,0 +1,29 @@
+# Go
+*.test
+*.out
+/backend/server
+/backend/dist/
+
+# JS / frontend (added with the frontend)
+node_modules/
+dist/
+.angular/
+.turbo/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/*
+
+# docs generation
+.claude
+graphify_out
+
+# Ed25519 signing key created by the scaffold
+.flyspace/keys/
+**/.flyspace/keys/
