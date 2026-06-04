@@ -1,0 +1,3 @@
+/* Dev playground only: pull in the design tokens so var(--fly-*) resolve when serving the
+ * extension standalone. Inside the shell, the shell provides the tokens. */
+@import '@flyspace/design-tokens/css';

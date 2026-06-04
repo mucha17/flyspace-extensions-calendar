@@ -1,0 +1,96 @@
+{
+  "$schema": "https://flyspace.dev/schema/extension/v0.json",
+  "manifestVersion": "0",
+  "id": "net.flytegration.calendar",
+  "version": "0.0.1",
+  "compatibleCore": "^0.3.0",
+  "peerRuntime": {
+    "@angular/core": "^21.0",
+    "flyspaceSdk": "^0.3"
+  },
+  "metadata": {
+    "name": {
+      "en": "Calendar",
+      "pl": "Kalendarz"
+    },
+    "description": {
+      "en": "A personal calendar for your events — all-day and timed, including multi-day.",
+      "pl": "Osobisty kalendarz na Twoje wydarzenia — całodniowe i godzinowe, także wielodniowe."
+    },
+    "author": {
+      "name": "Flytegration",
+      "url": "https://flytegration.com",
+      "email": "hello@flytegration.com",
+      "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAZ0VgnS92Ns8DjzO1HS7kizVR2M+Tnl4kDVhXA1LGT8g=\n-----END PUBLIC KEY-----\n"
+    },
+    "license": "Apache-2.0",
+    "homepage": "https://flytegration.com",
+    "icon": "./assets/icon.svg"
+  },
+  "endpoints": {
+    "backend": "http://localhost:9090",
+    "health": "/healthz",
+    "frontend": {
+      "remoteName": "calendar",
+      "entry": "http://localhost:4201/remoteEntry.json",
+      "exposes": {
+        "MainView": "./MainView",
+        "DashboardWidget": "./DashboardWidget",
+        "SettingsPanel": "./SettingsPanel"
+      }
+    }
+  },
+  "contributes": {
+    "navigation": [
+      {
+        "id": "calendar-main",
+        "label": {
+          "en": "Calendar",
+          "pl": "Kalendarz"
+        },
+        "icon": "./assets/icon.svg",
+        "component": "MainView",
+        "order": 100
+      }
+    ],
+    "threadTypes": [],
+    "notificationTypes": [],
+    "dashboardWidgets": [
+      {
+        "id": "calendar-upcoming",
+        "label": {
+          "en": "Upcoming events",
+          "pl": "Nadchodzące wydarzenia"
+        },
+        "component": "DashboardWidget"
+      }
+    ],
+    "settingsPanels": [
+      {
+        "id": "calendar-settings",
+        "component": "SettingsPanel",
+        "scope": "user"
+      }
+    ]
+  },
+  "permissions": {
+    "user": [],
+    "core": ["backend:call"],
+    "extensions": []
+  },
+  "events": {
+    "publishes": [],
+    "subscribes": [],
+    "delivery": "webhook"
+  },
+  "configuration": {
+    "userSchema": "./src/config.user.schema.json"
+  },
+  "network": {
+    "outbound": []
+  },
+  "integrity": {
+    "bundleHash": "sha384-PLACEHOLDER",
+    "signature": ""
+  }
+}

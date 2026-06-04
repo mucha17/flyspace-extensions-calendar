@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Template user config",
+  "type": "object",
+  "properties": {
+    "exampleSetting": {
+      "type": "string",
+      "default": "hello",
+      "x-flyspace-ui": {
+        "label": { "en": "Example setting", "pl": "Przykładowe ustawienie" },
+        "widget": "text"
+      }
+    }
+  }
+}

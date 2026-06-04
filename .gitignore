@@ -8,6 +8,8 @@
 node_modules/
 dist/
 .angular/
+# Native Federation build artifact (regenerated each build)
+**/tsconfig.federation.json
 .turbo/
 
 # env
