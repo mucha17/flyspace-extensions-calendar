@@ -38,5 +38,16 @@ services:
       db:
         condition: service_healthy
 
+  # Serves the built remote with permissive CORS so the shell can load it cross-origin. Build the
+  # bundle on the host first (pnpm build) — the Angular/esbuild build does not run cleanly inside a
+  # container, and serving the host build also keeps this image free of any registry dependency.
+  remote:
+    image: nginx:alpine
+    volumes:
+      - ./dist/template/browser:/usr/share/nginx/html:ro
+      - ./remote.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "4201:4201"
+
 volumes:
   calendar-db:
