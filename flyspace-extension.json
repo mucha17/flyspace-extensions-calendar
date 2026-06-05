@@ -55,7 +55,7 @@
   "id": "net.flytegration.calendar",
   "integrity": {
     "bundleHash": "sha384-MNPQaIOq45rjGgdPJqPCaDGPinJFA1jAMRRtYQ87lUJbHf+nZhpcpGU4qcZYclzS",
-    "signature": "ZwE7X9P2OsUuVjZpUHgmsYdRFNvjoI0+gaJLp90KxXYYnG7kGj3g9gqaU6wkjNm/NtTXOJM/FFlWNCF0hRvuBA=="
+    "signature": "eUdjR5hz+bpUdXlj+TylPx+zYrGQvpJYxDMXd9t/SrlQjurvEfHtOqsIPMydSL0pcf3IERSnz+inbV9xtQJDCg=="
   },
   "manifestVersion": "0",
   "metadata": {
@@ -82,7 +82,7 @@
   },
   "peerRuntime": {
     "@angular/core": "^21.0",
-    "flyspaceSdk": "^0.3"
+    "flyspaceSdk": "^0.4"
   },
   "permissions": {
     "core": [

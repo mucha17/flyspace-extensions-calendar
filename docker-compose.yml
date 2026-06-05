@@ -26,11 +26,13 @@ services:
     environment:
       CALENDAR_ADDR: ":9090"
       CALENDAR_DATABASE_URL: "postgres://calendar:dev@db:5432/calendar?sslmode=disable"
-      # The `iss` claim the platform mints (its public URL, as seen by the browser).
-      CALENDAR_CORE_ISSUER: "${CALENDAR_CORE_ISSUER:-http://localhost:8080}"
-      # Where to fetch the platform's JWKS from inside the container (host.docker.internal reaches
-      # a platform running on the host).
-      CALENDAR_CORE_JWKS_URL: "${CALENDAR_CORE_JWKS_URL:-http://host.docker.internal:8080/.well-known/jwks.json}"
+      # The `iss` the platform mints = its FLYSPACE_PUBLIC_URL. In the dev stack everything is
+      # reached through the shell, so that is http://localhost:4200 — NOT core's listen port. Must
+      # match exactly or the backend rejects the delegated token (401 auth.invalid).
+      CALENDAR_CORE_ISSUER: "${CALENDAR_CORE_ISSUER:-http://localhost:4200}"
+      # Where to fetch the platform's JWKS — independent of the issuer; host.docker.internal reaches
+      # core's listen port on the host.
+      CALENDAR_CORE_JWKS_URL: "${CALENDAR_CORE_JWKS_URL:-http://host.docker.internal:8090/.well-known/jwks.json}"
       CALENDAR_EXTENSION_ID: "net.flytegration.calendar"
     extra_hosts:
       - "host.docker.internal:host-gateway"

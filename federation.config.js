@@ -14,7 +14,10 @@ module.exports = withNativeFederation({
   },
 
   shared: {
-    ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+    // singleton so the extension reuses the shell's Angular/rxjs/SDK; strictVersion: false so a
+    // patch/minor skew between the shell's and the extension's build does not load a second copy
+    // (the cause of NG0203). Only the major must match — enforced by the manifest peerRuntime.
+    ...shareAll({ singleton: true, strictVersion: false, requiredVersion: 'auto' }),
   },
 
   skip: [
