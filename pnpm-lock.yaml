@@ -51,6 +51,9 @@ importers:
       '@angular/cli':
         specifier: ^21.0.0
         version: 21.2.14(@types/node@25.9.1)(chokidar@5.0.0)
+      '@angular/compiler':
+        specifier: 21.2.15
+        version: 21.2.15
       '@angular/compiler-cli':
         specifier: 21.2.15
         version: 21.2.15(@angular/compiler@21.2.15)(typescript@5.9.3)
