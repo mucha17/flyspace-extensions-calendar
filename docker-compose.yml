@@ -1,0 +1,42 @@
+# Runs the calendar backend and its own Postgres. The frontend remote and the platform run
+# separately. The backend verifies delegated tokens against the platform JWKS,
+# so the platform must be reachable at CALENDAR_CORE_JWKS_URL.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: calendar
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: calendar
+    ports:
+      - "5433:5432" # exposed for inspection; the backend reaches it in-network as db:5432
+    volumes:
+      - calendar-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U calendar -d calendar" ]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "9090:9090"
+    environment:
+      CALENDAR_ADDR: ":9090"
+      CALENDAR_DATABASE_URL: "postgres://calendar:dev@db:5432/calendar?sslmode=disable"
+      # The `iss` claim the platform mints (its public URL, as seen by the browser).
+      CALENDAR_CORE_ISSUER: "${CALENDAR_CORE_ISSUER:-http://localhost:8080}"
+      # Where to fetch the platform's JWKS from inside the container (host.docker.internal reaches
+      # a platform running on the host).
+      CALENDAR_CORE_JWKS_URL: "${CALENDAR_CORE_JWKS_URL:-http://host.docker.internal:8080/.well-known/jwks.json}"
+      CALENDAR_EXTENSION_ID: "net.flytegration.calendar"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  calendar-db:
