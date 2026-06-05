@@ -1,3 +1,3 @@
-/* Dev playground only: pull in the design tokens so var(--fly-*) resolve when serving the
- * extension standalone. Inside the shell, the shell provides the tokens. */
-@import '@flyspace/design-tokens/css';
+/* Global styles for the shipped remote. The design tokens (var(--fly-*)) are provided by the host
+ * shell, so the extension must NOT bundle their definitions here. For standalone dev (the
+ * playground), the tokens are pulled in via the build's `development` configuration in angular.json. */

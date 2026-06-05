@@ -32,7 +32,8 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "styles": ["src/styles.css", "node_modules/@flyspace/design-tokens/dist/tokens.css"]
             }
           },
           "defaultConfiguration": "production"
@@ -56,5 +57,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
