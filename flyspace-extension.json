@@ -1,5 +1,5 @@
 {
-  "$schema": "https://flyspace.dev/schema/extension/v0.json",
+  "$schema": "https://flyspace.flytegration.net/schema/extension/v0.json",
   "compatibleCore": "^0.3.0",
   "configuration": {
     "userSchema": "./src/config.user.schema.json"
@@ -55,7 +55,7 @@
   "id": "net.flytegration.calendar",
   "integrity": {
     "bundleHash": "sha384-MNPQaIOq45rjGgdPJqPCaDGPinJFA1jAMRRtYQ87lUJbHf+nZhpcpGU4qcZYclzS",
-    "signature": "9LxQwSxgCV1DbLCHYjA1B5BYSMV1NAcacvp9kFHJ1odxFkFGs8mYGL+v1CI4ZT5HOMCg3MGb12NQ6CwvgQXXBQ=="
+    "signature": "Pg97n5wZrgA1n0LhHzaorsvbe4honWpNmHcMiIsuTsdJNxsqhmC378ak/XJl6uaUtHJoqHi3OJsNpEOy+XqBAA=="
   },
   "manifestVersion": "0",
   "metadata": {
