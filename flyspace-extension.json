@@ -1,96 +1,95 @@
 {
   "$schema": "https://flyspace.dev/schema/extension/v0.json",
-  "manifestVersion": "0",
-  "id": "net.flytegration.calendar",
-  "version": "0.0.1",
   "compatibleCore": "^0.3.0",
-  "peerRuntime": {
-    "@angular/core": "^21.0",
-    "flyspaceSdk": "^0.3"
-  },
-  "metadata": {
-    "name": {
-      "en": "Calendar",
-      "pl": "Kalendarz"
-    },
-    "description": {
-      "en": "A personal calendar for your events — all-day and timed, including multi-day.",
-      "pl": "Osobisty kalendarz na Twoje wydarzenia — całodniowe i godzinowe, także wielodniowe."
-    },
-    "author": {
-      "name": "Flytegration",
-      "url": "https://flytegration.com",
-      "email": "hello@flytegration.com",
-      "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAZ0VgnS92Ns8DjzO1HS7kizVR2M+Tnl4kDVhXA1LGT8g=\n-----END PUBLIC KEY-----\n"
-    },
-    "license": "Apache-2.0",
-    "homepage": "https://flytegration.com",
-    "icon": "./assets/icon.svg"
-  },
-  "endpoints": {
-    "backend": "http://localhost:9090",
-    "health": "/healthz",
-    "frontend": {
-      "remoteName": "calendar",
-      "entry": "http://localhost:4201/remoteEntry.json",
-      "exposes": {
-        "MainView": "./MainView",
-        "DashboardWidget": "./DashboardWidget",
-        "SettingsPanel": "./SettingsPanel"
-      }
-    }
+  "configuration": {
+    "userSchema": "./src/config.user.schema.json"
   },
   "contributes": {
+    "dashboardWidgets": [
+      {
+        "component": "DashboardWidget",
+        "defaultSize": "medium",
+        "id": "calendar-upcoming"
+      }
+    ],
     "navigation": [
       {
+        "component": "MainView",
+        "icon": "./assets/icon.svg",
         "id": "calendar-main",
         "label": {
           "en": "Calendar",
           "pl": "Kalendarz"
         },
-        "icon": "./assets/icon.svg",
-        "component": "MainView",
         "order": 100
       }
     ],
-    "threadTypes": [],
     "notificationTypes": [],
-    "dashboardWidgets": [
-      {
-        "id": "calendar-upcoming",
-        "label": {
-          "en": "Upcoming events",
-          "pl": "Nadchodzące wydarzenia"
-        },
-        "component": "DashboardWidget"
-      }
-    ],
     "settingsPanels": [
       {
-        "id": "calendar-settings",
         "component": "SettingsPanel",
+        "id": "calendar-settings",
         "scope": "user"
       }
-    ]
+    ],
+    "threadTypes": []
   },
-  "permissions": {
-    "user": [],
-    "core": ["backend:call"],
-    "extensions": []
+  "endpoints": {
+    "backend": "http://localhost:9090",
+    "frontend": {
+      "entry": "http://localhost:4201/remoteEntry.json",
+      "exposes": {
+        "DashboardWidget": "./DashboardWidget",
+        "MainView": "./MainView",
+        "SettingsPanel": "./SettingsPanel"
+      },
+      "remoteName": "calendar"
+    },
+    "health": "/healthz"
   },
   "events": {
+    "delivery": "webhook",
     "publishes": [],
-    "subscribes": [],
-    "delivery": "webhook"
+    "subscribes": []
   },
-  "configuration": {
-    "userSchema": "./src/config.user.schema.json"
+  "id": "net.flytegration.calendar",
+  "integrity": {
+    "bundleHash": "sha384-MNPQaIOq45rjGgdPJqPCaDGPinJFA1jAMRRtYQ87lUJbHf+nZhpcpGU4qcZYclzS",
+    "signature": "9LxQwSxgCV1DbLCHYjA1B5BYSMV1NAcacvp9kFHJ1odxFkFGs8mYGL+v1CI4ZT5HOMCg3MGb12NQ6CwvgQXXBQ=="
+  },
+  "manifestVersion": "0",
+  "metadata": {
+    "author": {
+      "email": "hello@flytegration.com",
+      "name": "Flytegration",
+      "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAZ0VgnS92Ns8DjzO1HS7kizVR2M+Tnl4kDVhXA1LGT8g=\n-----END PUBLIC KEY-----\n",
+      "url": "https://flytegration.com"
+    },
+    "description": {
+      "en": "A personal calendar for your events — all-day and timed, including multi-day.",
+      "pl": "Osobisty kalendarz na Twoje wydarzenia — całodniowe i godzinowe, także wielodniowe."
+    },
+    "homepage": "https://flytegration.com",
+    "icon": "./assets/icon.svg",
+    "license": "Apache-2.0",
+    "name": {
+      "en": "Calendar",
+      "pl": "Kalendarz"
+    }
   },
   "network": {
     "outbound": []
   },
-  "integrity": {
-    "bundleHash": "sha384-PLACEHOLDER",
-    "signature": ""
-  }
+  "peerRuntime": {
+    "@angular/core": "^21.0",
+    "flyspaceSdk": "^0.3"
+  },
+  "permissions": {
+    "core": [
+      "backend:call"
+    ],
+    "extensions": [],
+    "user": []
+  },
+  "version": "0.0.1"
 }
