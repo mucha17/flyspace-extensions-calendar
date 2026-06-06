@@ -13,6 +13,7 @@ type Config struct {
 	CoreJWKSURL string // core's JWKS endpoint used to verify delegated tokens
 	CoreIssuer  string // expected `iss` claim — core's public URL
 	ExtensionID string // expected `aud` claim — this extension's id
+	NatsURL     string // optional: core's NATS URL for the opt-in fast path (GDPR teardown). Empty disables it.
 }
 
 // Load reads the configuration from the environment and fails fast on missing required values.
@@ -23,6 +24,7 @@ func Load() (Config, error) {
 		CoreJWKSURL: os.Getenv("CALENDAR_CORE_JWKS_URL"),
 		CoreIssuer:  os.Getenv("CALENDAR_CORE_ISSUER"),
 		ExtensionID: getenv("CALENDAR_EXTENSION_ID", "net.flytegration.calendar"),
+		NatsURL:     os.Getenv("CALENDAR_NATS_URL"),
 	}
 	if c.DatabaseURL == "" {
 		return Config{}, fmt.Errorf("CALENDAR_DATABASE_URL is required")

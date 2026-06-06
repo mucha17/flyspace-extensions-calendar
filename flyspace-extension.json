@@ -48,14 +48,16 @@
     "health": "/healthz"
   },
   "events": {
-    "delivery": "webhook",
+    "delivery": "nats",
     "publishes": [],
-    "subscribes": []
+    "subscribes": [
+      "flyspace.core.user.deleted"
+    ]
   },
   "id": "net.flytegration.calendar",
   "integrity": {
     "bundleHash": "sha384-f4lEBn2wLkwLqll13ClLERYx+1xOmRhmTqBvbxPdE8XPGLM4IT+8MnBDQSG37aTW",
-    "signature": "Zm7oDZ9m+GhKpQ1xJtui2/ZiWJ7+8DQyWLDqEwaP5auhVKWZbeFyYnIQYrnWBIaVelmN/5M1xExrzjXkcyIpDQ=="
+    "signature": "GSeQdHIMF7zeThkuIoEGDFOCIwzHpBNjPmbjU9v6d/PPOGKixJdlEZVwl1JuElIsVrCuY3R+dsIaUgf9Lm/cCQ=="
   },
   "manifestVersion": "0",
   "metadata": {
