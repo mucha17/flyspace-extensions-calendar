@@ -29,7 +29,7 @@ services:
       # The `iss` the platform mints = its FLYSPACE_PUBLIC_URL. In the dev stack everything is
       # reached through the shell, so that is http://localhost:4200 — NOT core's listen port. Must
       # match exactly or the backend rejects the delegated token (401 auth.invalid).
-      CALENDAR_CORE_ISSUER: "${CALENDAR_CORE_ISSUER:-http://localhost:4200}"
+      CALENDAR_CORE_ISSUER: "${CALENDAR_CORE_ISSUER:-http://localhost:8090}"
       # Where to fetch the platform's JWKS — independent of the issuer; host.docker.internal reaches
       # core's listen port on the host.
       CALENDAR_CORE_JWKS_URL: "${CALENDAR_CORE_JWKS_URL:-http://host.docker.internal:8090/.well-known/jwks.json}"
