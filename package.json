@@ -34,7 +34,7 @@
   "name": "flyspace-extension-calendar",
   "private": true,
   "scripts": {
-    "build": "ng build && node ./scripts/integrity.mjs",
+    "build": "node ./scripts/build-bundle.mjs && node ./scripts/integrity.mjs",
     "lint": "eslint . && stylelint \"src/**/*.{css,scss}\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
