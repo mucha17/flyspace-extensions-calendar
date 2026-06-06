@@ -94,6 +94,14 @@ func (s *PgEventStore) Delete(ctx context.Context, userSubject, id string) error
 	return nil
 }
 
+func (s *PgEventStore) PurgeUser(ctx context.Context, userSubject string) (int, error) {
+	tag, err := s.pool.Exec(ctx, `DELETE FROM calendar.event WHERE user_subject = $1`, userSubject)
+	if err != nil {
+		return 0, fmt.Errorf("purge user events: %w", err)
+	}
+	return int(tag.RowsAffected()), nil
+}
+
 // rowScanner is satisfied by both pgx.Row and pgx.Rows.
 type rowScanner interface {
 	Scan(dest ...any) error

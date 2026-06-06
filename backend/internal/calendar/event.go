@@ -10,9 +10,10 @@ import (
 
 // Errors callers branch on.
 var (
-	ErrNotFound       = errors.New("calendar: event not found")
-	ErrTitleRequired  = errors.New("calendar: title is required")
-	ErrEndBeforeStart = errors.New("calendar: end is before start")
+	ErrNotFound            = errors.New("calendar: event not found")
+	ErrTitleRequired       = errors.New("calendar: title is required")
+	ErrEndBeforeStart      = errors.New("calendar: end is before start")
+	ErrUserSubjectRequired = errors.New("calendar: user subject is required")
 )
 
 // Event is a calendar entry owned by one user. An all-day event spans whole days; a timed event
@@ -54,4 +55,6 @@ type Store interface {
 	ListInRange(ctx context.Context, userSubject string, from, to time.Time) ([]Event, error)
 	Replace(ctx context.Context, userSubject, id string, d Draft) (Event, error)
 	Delete(ctx context.Context, userSubject, id string) error
+	// PurgeUser removes every event belonging to the user and reports how many were deleted.
+	PurgeUser(ctx context.Context, userSubject string) (int, error)
 }

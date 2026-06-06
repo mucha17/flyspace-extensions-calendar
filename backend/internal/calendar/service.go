@@ -60,3 +60,20 @@ func (s *Service) Delete(ctx context.Context, userSubject, id string) error {
 	}
 	return nil
 }
+
+// PurgeUser erases every event this backend stored for userSubject and returns how many were
+// removed. It is the GDPR teardown entry point: core owns the user record and signals its deletion,
+// and this backend owns — and must erase — the data it keeps for that user, since core cannot reach
+// into this database. The transport that carries core's user-deleted signal is wired separately;
+// this method is the seam it drives. It is idempotent — purging a user with no events removes
+// nothing and is not an error — so a redelivered signal is safe.
+func (s *Service) PurgeUser(ctx context.Context, userSubject string) (int, error) {
+	if userSubject == "" {
+		return 0, ErrUserSubjectRequired
+	}
+	n, err := s.store.PurgeUser(ctx, userSubject)
+	if err != nil {
+		return 0, fmt.Errorf("purge user: %w", err)
+	}
+	return n, nil
+}

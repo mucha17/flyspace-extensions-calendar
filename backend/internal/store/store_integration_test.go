@@ -115,6 +115,45 @@ func TestMultiDayOverlap(t *testing.T) {
 	}
 }
 
+func TestPurgeUserRemovesOnlyThatUsersEvents(t *testing.T) {
+	ctx := context.Background()
+	s := store.NewPgEventStore(pool)
+	const victim, bystander = "purge-victim", "purge-bystander"
+
+	for _, d := range []calendar.Draft{
+		{Title: "A", Start: day(20, 9), End: day(20, 10)},
+		{Title: "B", Start: day(21, 9), End: day(21, 10)},
+	} {
+		if _, err := s.Create(ctx, victim, d); err != nil {
+			t.Fatalf("seed victim: %v", err)
+		}
+	}
+	if _, err := s.Create(ctx, bystander, calendar.Draft{Title: "Keep", Start: day(20, 9), End: day(20, 10)}); err != nil {
+		t.Fatalf("seed bystander: %v", err)
+	}
+
+	n, err := s.PurgeUser(ctx, victim)
+	if err != nil {
+		t.Fatalf("PurgeUser: %v", err)
+	}
+	if n != 2 {
+		t.Fatalf("purged %d, want 2", n)
+	}
+
+	// The victim's events are gone; the bystander's remain.
+	if got, _ := s.ListInRange(ctx, victim, day(1, 0), day(28, 0)); len(got) != 0 {
+		t.Fatalf("victim still has %d events, want 0", len(got))
+	}
+	if got, _ := s.ListInRange(ctx, bystander, day(1, 0), day(28, 0)); len(got) != 1 {
+		t.Fatalf("bystander has %d events, want 1", len(got))
+	}
+
+	// Idempotent: purging again removes nothing and is not an error.
+	if n, err := s.PurgeUser(ctx, victim); err != nil || n != 0 {
+		t.Fatalf("second PurgeUser = (%d, %v), want (0, nil)", n, err)
+	}
+}
+
 func TestUserIsolation(t *testing.T) {
 	ctx := context.Background()
 	s := store.NewPgEventStore(pool)

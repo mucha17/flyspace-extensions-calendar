@@ -10,9 +10,13 @@ import (
 )
 
 type fakeStore struct {
-	created    *calendar.Draft
-	replaceErr error
-	listed     []calendar.Event
+	created      *calendar.Draft
+	replaceErr   error
+	listed       []calendar.Event
+	purgedUser   string
+	purgeCalled  bool
+	purgeReturns int
+	purgeErr     error
 }
 
 func (f *fakeStore) Create(_ context.Context, userSubject string, d calendar.Draft) (calendar.Event, error) {
@@ -29,6 +33,11 @@ func (f *fakeStore) Replace(_ context.Context, _, id string, d calendar.Draft) (
 	return calendar.Event{ID: id, Title: d.Title, Start: d.Start, End: d.End}, nil
 }
 func (f *fakeStore) Delete(context.Context, string, string) error { return nil }
+func (f *fakeStore) PurgeUser(_ context.Context, userSubject string) (int, error) {
+	f.purgeCalled = true
+	f.purgedUser = userSubject
+	return f.purgeReturns, f.purgeErr
+}
 
 func day(y int, m time.Month, d, h int) time.Time {
 	return time.Date(y, m, d, h, 0, 0, 0, time.UTC)
@@ -99,5 +108,41 @@ func TestReplacePropagatesNotFound(t *testing.T) {
 		calendar.Draft{Title: "x", Start: day(2026, 6, 1, 9), End: day(2026, 6, 1, 10)})
 	if !errors.Is(err, calendar.ErrNotFound) {
 		t.Fatalf("err = %v, want ErrNotFound", err)
+	}
+}
+
+func TestPurgeUserRejectsEmptySubject(t *testing.T) {
+	store := &fakeStore{}
+	n, err := calendar.NewService(store).PurgeUser(context.Background(), "")
+	if !errors.Is(err, calendar.ErrUserSubjectRequired) {
+		t.Fatalf("err = %v, want ErrUserSubjectRequired", err)
+	}
+	if n != 0 {
+		t.Fatalf("count = %d, want 0", n)
+	}
+	if store.purgeCalled {
+		t.Fatal("an empty subject must not reach the store")
+	}
+}
+
+func TestPurgeUserDelegatesAndReturnsCount(t *testing.T) {
+	store := &fakeStore{purgeReturns: 3}
+	n, err := calendar.NewService(store).PurgeUser(context.Background(), "user-1")
+	if err != nil {
+		t.Fatalf("unexpected err: %v", err)
+	}
+	if n != 3 {
+		t.Fatalf("count = %d, want 3", n)
+	}
+	if store.purgedUser != "user-1" {
+		t.Fatalf("store purged %q, want user-1", store.purgedUser)
+	}
+}
+
+func TestPurgeUserWrapsStoreError(t *testing.T) {
+	sentinel := errors.New("db down")
+	store := &fakeStore{purgeErr: sentinel}
+	if _, err := calendar.NewService(store).PurgeUser(context.Background(), "user-1"); !errors.Is(err, sentinel) {
+		t.Fatalf("err = %v, want it to wrap the store error", err)
 	}
 }
