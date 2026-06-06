@@ -23,6 +23,7 @@
     "@flyspace/eslint-plugin": "^0.4.0",
     "@flyspace/manifest-schema": "^0.4.0",
     "@flyspace/stylelint-config": "^0.4.0",
+    "@vitest/coverage-v8": "^4.1.8",
     "angular-eslint": "^21.0.0",
     "eslint": "^9.0.0",
     "stylelint": "^16.0.0",
@@ -36,6 +37,7 @@
     "build": "ng build && node ./scripts/integrity.mjs",
     "lint": "eslint . && stylelint \"src/**/*.{css,scss}\"",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "validate-manifest": "flyspace-ext validate"
   },
   "version": "0.0.1"

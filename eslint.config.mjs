@@ -10,7 +10,7 @@ import flyspace from '@flyspace/eslint-plugin';
 // @flyspace/stylelint-config (the `lint` script runs stylelint alongside this).
 export default tseslint.config(
   {
-    ignores: ['dist/**', '.angular/**', 'public/**', 'scripts/**', '**/index.html', '**/*.config.{js,mjs,cjs,ts,mts}'],
+    ignores: ['dist/**', '.angular/**', 'coverage/**', 'public/**', 'scripts/**', '**/index.html', '**/*.config.{js,mjs,cjs,ts,mts}'],
   },
   {
     files: ['**/*.ts'],

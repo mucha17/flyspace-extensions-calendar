@@ -13,5 +13,27 @@ export default defineConfig({
         inline: [/@flyspace\//, /@angular\//],
       },
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      include: ['src/**/*.ts'],
+      // Dev-only harness, federation/dev entrypoints, and lazy route wiring carry no shippable
+      // logic to cover.
+      exclude: [
+        'src/**/*.spec.ts',
+        'src/playground/**',
+        'src/main.ts',
+        'src/bootstrap.ts',
+        'src/test-setup.ts',
+        'src/**/routes.ts',
+      ],
+      // Floors set just under current coverage to catch regressions without churn.
+      thresholds: {
+        statements: 90,
+        branches: 80,
+        functions: 90,
+        lines: 90,
+      },
+    },
   },
 });

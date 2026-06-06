@@ -8,6 +8,7 @@
 node_modules/
 dist/
 .angular/
+coverage/
 # Native Federation build artifact (regenerated each build)
 **/tsconfig.federation.json
 .turbo/
