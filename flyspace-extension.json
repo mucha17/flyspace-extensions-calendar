@@ -48,7 +48,7 @@
     "health": "/healthz"
   },
   "events": {
-    "delivery": "nats",
+    "delivery": "webhook",
     "publishes": [],
     "subscribes": [
       "flyspace.core.user.deleted"
@@ -57,7 +57,7 @@
   "id": "net.flytegration.calendar",
   "integrity": {
     "bundleHash": "sha384-f4lEBn2wLkwLqll13ClLERYx+1xOmRhmTqBvbxPdE8XPGLM4IT+8MnBDQSG37aTW",
-    "signature": "GSeQdHIMF7zeThkuIoEGDFOCIwzHpBNjPmbjU9v6d/PPOGKixJdlEZVwl1JuElIsVrCuY3R+dsIaUgf9Lm/cCQ=="
+    "signature": "XgwT3K7v6s7PZPrWN+TkIcYg2ePx/1f0lu8JkenLZeIk7GcXmRgCu70kia3Jvy0XA/1g3BYkPte31Ww1ExrXAw=="
   },
   "manifestVersion": "0",
   "metadata": {

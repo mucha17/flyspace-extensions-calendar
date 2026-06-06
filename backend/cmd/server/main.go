@@ -20,7 +20,6 @@ import (
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/calendar"
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/config"
 	calhttp "github.com/mucha17/flyspace-extensions-calendar/backend/internal/http"
-	calnats "github.com/mucha17/flyspace-extensions-calendar/backend/internal/nats"
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/store"
 )
 
@@ -56,27 +55,10 @@ func run(log *slog.Logger) error {
 	}
 
 	events := calendar.NewService(store.NewPgEventStore(pool))
-
-	// Opt-in NATS fast path: the GDPR teardown consumer. It is dormant unless a broker URL is
-	// configured, and a NATS problem never blocks the HTTP backend (its primary function) — like the
-	// JWKS verifier, it degrades rather than failing boot.
-	if cfg.NatsURL != "" {
-		if conn, err := calnats.Connect(cfg.NatsURL); err != nil {
-			log.Error("nats connect failed; GDPR teardown consumer disabled", "err", err)
-		} else {
-			defer conn.Close()
-			if cc, err := calnats.NewTeardownConsumer(conn, events, log).Start(ctx); err != nil {
-				log.Error("teardown consumer start failed; GDPR teardown disabled", "err", err)
-			} else {
-				defer cc.Stop()
-				log.Info("GDPR teardown consumer started", "subject", calnats.SubjectUserDeleted)
-			}
-		}
-	} else {
-		log.Info("nats not configured; GDPR teardown consumer disabled")
-	}
-
-	handler := calhttp.NewRouter(calhttp.Deps{Events: events, Verifier: verifier})
+	// GDPR teardown is delivered by core over HTTP: core POSTs flyspace.core.user.deleted to the
+	// /flyspace/events webhook, which drives events.PurgeUser. (The NATS consumer in internal/nats
+	// is retained for the deferred broker fast path but is not wired.)
+	handler := calhttp.NewRouter(calhttp.Deps{Events: events, CoreEvents: events, Verifier: verifier})
 
 	srv := &stdhttp.Server{Addr: cfg.Addr, Handler: handler, ReadHeaderTimeout: 10 * time.Second}
 	go func() {

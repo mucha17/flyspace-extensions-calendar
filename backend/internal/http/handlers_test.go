@@ -13,10 +13,13 @@ import (
 )
 
 type fakeEvents struct {
-	created    *calendar.Draft
-	createdBy  string
-	replaceErr error
-	deleteErr  error
+	created       *calendar.Draft
+	createdBy     string
+	replaceErr    error
+	deleteErr     error
+	purgedSubject string
+	purgeCount    int
+	purgeErr      error
 }
 
 func (f *fakeEvents) Create(_ context.Context, userSubject string, d calendar.Draft) (calendar.Event, error) {
@@ -33,6 +36,13 @@ func (f *fakeEvents) Replace(_ context.Context, _, id string, d calendar.Draft) 
 	return calendar.Event{ID: id, Title: d.Title, Start: d.Start, End: d.End}, nil
 }
 func (f *fakeEvents) Delete(context.Context, string, string) error { return f.deleteErr }
+func (f *fakeEvents) PurgeUser(_ context.Context, userSubject string) (int, error) {
+	f.purgedSubject = userSubject
+	if f.purgeErr != nil {
+		return 0, f.purgeErr
+	}
+	return f.purgeCount, nil
+}
 
 // fakeVerifier accepts the literal token "good" as user-1 and rejects everything else.
 type fakeVerifier struct{}
@@ -44,8 +54,8 @@ func (fakeVerifier) Subject(token string) (string, error) {
 	return "", stdhttp.ErrAbortHandler
 }
 
-func server(events calhttp.EventService) stdhttp.Handler {
-	return calhttp.NewRouter(calhttp.Deps{Events: events, Verifier: fakeVerifier{}})
+func server(events *fakeEvents) stdhttp.Handler {
+	return calhttp.NewRouter(calhttp.Deps{Events: events, CoreEvents: events, Verifier: fakeVerifier{}})
 }
 
 func req(method, path, body, token string) *stdhttp.Request {
