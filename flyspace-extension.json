@@ -54,8 +54,8 @@
   },
   "id": "net.flytegration.calendar",
   "integrity": {
-    "bundleHash": "sha384-MNPQaIOq45rjGgdPJqPCaDGPinJFA1jAMRRtYQ87lUJbHf+nZhpcpGU4qcZYclzS",
-    "signature": "eUdjR5hz+bpUdXlj+TylPx+zYrGQvpJYxDMXd9t/SrlQjurvEfHtOqsIPMydSL0pcf3IERSnz+inbV9xtQJDCg=="
+    "bundleHash": "sha384-f4lEBn2wLkwLqll13ClLERYx+1xOmRhmTqBvbxPdE8XPGLM4IT+8MnBDQSG37aTW",
+    "signature": "Zm7oDZ9m+GhKpQ1xJtui2/ZiWJ7+8DQyWLDqEwaP5auhVKWZbeFyYnIQYrnWBIaVelmN/5M1xExrzjXkcyIpDQ=="
   },
   "manifestVersion": "0",
   "metadata": {
