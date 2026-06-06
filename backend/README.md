@@ -31,6 +31,7 @@ An event is `{ id, title, allDay, start, end, notes? }` with `start`/`end` in RF
 | `CALENDAR_CORE_JWKS_URL` | — (required) | platform JWKS endpoint (`…/.well-known/jwks.json`) |
 | `CALENDAR_CORE_ISSUER` | — (required) | expected token issuer (the platform's public URL) |
 | `CALENDAR_EXTENSION_ID` | `net.flytegration.calendar` | expected token audience |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | — (optional) | OTLP/HTTP endpoint for traces + metrics; unset makes telemetry a no-op (trace ids still propagate) |
 
 Migrations under `migrations/` are embedded and applied on startup.
 

@@ -15,13 +15,17 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/auth"
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/calendar"
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/config"
 	calhttp "github.com/mucha17/flyspace-extensions-calendar/backend/internal/http"
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/store"
+	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/telemetry"
 )
+
+const serviceName = "flyspace-ext-calendar"
 
 func main() {
 	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -39,6 +43,18 @@ func run(log *slog.Logger) error {
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
+
+	// Always installs the W3C propagator so the trace joins core's; the OTLP exporter is set up only
+	// when OTEL_EXPORTER_OTLP_ENDPOINT is configured, otherwise this is a no-op.
+	shutdownTelemetry, err := telemetry.Init(ctx, serviceName, cfg.OTLPEndpoint)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = shutdownTelemetry(shutdownCtx)
+	}()
 
 	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
 	if err != nil {
@@ -58,7 +74,12 @@ func run(log *slog.Logger) error {
 	// GDPR teardown is delivered by core over HTTP: core POSTs flyspace.core.user.deleted to the
 	// /flyspace/events webhook, which drives events.PurgeUser. (The NATS consumer in internal/nats
 	// is retained for the deferred broker fast path but is not wired.)
-	handler := calhttp.NewRouter(calhttp.Deps{Events: events, CoreEvents: events, Verifier: verifier})
+	// otelhttp creates a server span per request and extracts incoming W3C trace context, so this
+	// backend's spans become children of core's.
+	handler := otelhttp.NewHandler(
+		calhttp.NewRouter(calhttp.Deps{Events: events, CoreEvents: events, Verifier: verifier}),
+		serviceName,
+	)
 
 	srv := &stdhttp.Server{Addr: cfg.Addr, Handler: handler, ReadHeaderTimeout: 10 * time.Second}
 	go func() {

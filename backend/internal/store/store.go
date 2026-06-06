@@ -13,6 +13,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.opentelemetry.io/otel"
 
 	"github.com/mucha17/flyspace-extensions-calendar/backend/internal/calendar"
 	"github.com/mucha17/flyspace-extensions-calendar/backend/migrations"
@@ -24,9 +25,15 @@ type PgEventStore struct{ pool *pgxpool.Pool }
 // NewPgEventStore builds the store over a pgx pool.
 func NewPgEventStore(pool *pgxpool.Pool) *PgEventStore { return &PgEventStore{pool: pool} }
 
+// tracer names the store's DB spans. Span names are the low-cardinality operation (db.events.*); no
+// ids or user subjects go in the name — those are personal data and stay out of traces.
+var tracer = otel.Tracer("calendar/store")
+
 const eventColumns = `id, user_subject, title, all_day, starts_at, ends_at, notes, created_at, updated_at`
 
 func (s *PgEventStore) Create(ctx context.Context, userSubject string, d calendar.Draft) (calendar.Event, error) {
+	ctx, span := tracer.Start(ctx, "db.events.create")
+	defer span.End()
 	row := s.pool.QueryRow(ctx,
 		`INSERT INTO calendar.event (user_subject, title, all_day, starts_at, ends_at, notes)
 		 VALUES ($1, $2, $3, $4, $5, $6)
@@ -40,6 +47,8 @@ func (s *PgEventStore) Create(ctx context.Context, userSubject string, d calenda
 }
 
 func (s *PgEventStore) ListInRange(ctx context.Context, userSubject string, from, to time.Time) ([]calendar.Event, error) {
+	ctx, span := tracer.Start(ctx, "db.events.list")
+	defer span.End()
 	// An event overlaps [from, to) when it starts before `to` and ends at or after `from`.
 	rows, err := s.pool.Query(ctx,
 		`SELECT `+eventColumns+`
@@ -67,6 +76,8 @@ func (s *PgEventStore) ListInRange(ctx context.Context, userSubject string, from
 }
 
 func (s *PgEventStore) Replace(ctx context.Context, userSubject, id string, d calendar.Draft) (calendar.Event, error) {
+	ctx, span := tracer.Start(ctx, "db.events.replace")
+	defer span.End()
 	row := s.pool.QueryRow(ctx,
 		`UPDATE calendar.event
 		 SET title = $3, all_day = $4, starts_at = $5, ends_at = $6, notes = $7, updated_at = now()
@@ -84,6 +95,8 @@ func (s *PgEventStore) Replace(ctx context.Context, userSubject, id string, d ca
 }
 
 func (s *PgEventStore) Delete(ctx context.Context, userSubject, id string) error {
+	ctx, span := tracer.Start(ctx, "db.events.delete")
+	defer span.End()
 	tag, err := s.pool.Exec(ctx, `DELETE FROM calendar.event WHERE id = $1 AND user_subject = $2`, id, userSubject)
 	if err != nil {
 		return fmt.Errorf("delete event: %w", err)
@@ -95,6 +108,8 @@ func (s *PgEventStore) Delete(ctx context.Context, userSubject, id string) error
 }
 
 func (s *PgEventStore) PurgeUser(ctx context.Context, userSubject string) (int, error) {
+	ctx, span := tracer.Start(ctx, "db.events.purge")
+	defer span.End()
 	tag, err := s.pool.Exec(ctx, `DELETE FROM calendar.event WHERE user_subject = $1`, userSubject)
 	if err != nil {
 		return 0, fmt.Errorf("purge user events: %w", err)
