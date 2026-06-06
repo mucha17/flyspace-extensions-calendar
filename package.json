@@ -33,6 +33,7 @@
   },
   "name": "flyspace-extension-calendar",
   "private": true,
+  "packageManager": "pnpm@11.5.0",
   "scripts": {
     "build": "node ./scripts/build-bundle.mjs && node ./scripts/integrity.mjs",
     "lint": "eslint . && stylelint \"src/**/*.{css,scss}\"",
